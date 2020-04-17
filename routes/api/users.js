@@ -7,6 +7,7 @@ const { check, validationResult } = require('express-validator');
 const User = require('../../models/Users');
 
 router.post(
+  //takes 3 args, string, array, anonymous callback function
   '/',
   [
     check('name', 'Name is required')

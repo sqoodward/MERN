@@ -1,0 +1,89 @@
+<!-- Styles -->
+<style>
+  #chartdiv {
+    width: 100%;
+    height: 500px;
+  }
+</style>
+
+<!-- Resources -->
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/dataviz.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+<!-- Chart code -->
+<script>
+  am4core.ready(function () {
+    // Themes
+    am4core.useTheme(am4themes_dataviz); //for any theme used, it needs to be imported via <script>
+    am4core.useTheme(am4themes_animated);
+
+    // Create chart instance
+    var chart = am4core.create('chartdiv', am4charts.XYChart);
+
+    // Add data [import data]
+    chart.dataSource.url = 'http://localhost:5000/data.json';
+    chart.dataSource.parser = new am4core.JSONParser();
+    chart.dataSource.parser.options.emptyAs = 0;
+    chart.dataSource.reloadFrequency = 5000; //refresh chart at interval to update data asynchronously
+
+    // Set input format for the dates
+    chart.dateFormatter.inputDateFormat = 'i'; //the parser doesn't understand what format you typed the date as. So you need to specify the format.
+    //if my imported dates are formatted like 2019-01-12-12, I have to type in chart.dateFormatter.inputDateFormat = 'YYYY-MM-dd-hh'; or year, month, day, hour
+    //if you didn't, the parser might confuse 01 as either january 12 or december 1. also, if you have hours/minutes, it will not show on the axis labels
+    //the max zoom for the labels stop at the day. Either type 'hh' or any other format that include hours, like 'i' (ISO 8601) which includes the whole set.
+    //ISO FORMAT "2020-12-20T08:21:57.592Z" 2020(year):12(month):20(day):T(delimiter):08(hour):21(minute):57(seconds).592(milliseconds)Z(UTC)
+
+    // chart.dateFormatter = new am4core.DateFormatter(); //above is for the parser... what if you want a simpler format just for display?
+    // chart.dateFormatter.dateFormat = 'I'; //you can use this to format the date any way you like
+
+    //Create title
+    let title = chart.titles.create();
+    title.text = 'Humidity Tracker';
+    title.fontSize = 40;
+    title.marginBottom = 30;
+
+    // Create axes [establish planes]
+    var dateAxis = chart.xAxes.push(new am4charts.DateAxis()); //X Axis
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis()); //Y Axis
+    dateAxis.keepSelection = true; //everytime chart updates because of chart.dataSource.reloadFrequency, it resets zoom by default. This prevents it.
+
+    // Create series [aka line]
+    var series = chart.series.push(new am4charts.LineSeries()); //for plot/lines to appear, set dateFields with property names from the JSON file
+    series.dataFields.valueY = 'humidity'; //Y value - 'value' in JSON property
+    series.dataFields.dateX = 'date'; //X value - 'date' in JSON property
+    series.strokeWidth = 2; //thickness of line
+    series.minBulletDistance = 15; //bulllets only show within certain treshold - don't want graph spammed with bullets - higher number the more zoomed for it to show
+
+    // Tooltips [pop up info textbox on hover]
+    series.tooltipText = 'Humidity: {humidity} \n Time: {date}'; //tooltip text - parenthesis for variables, [\n for linebreak]
+    series.tooltip.background.cornerRadius = 0; //make tooltip round
+    series.tooltip.background.strokeOpacity = 0; //make tooltip transparent
+    series.tooltip.pointerOrientation = 'horizontal'; //direction of tooltip arrow [vertical/horizontal]
+    series.tooltip.label.minWidth = 40; //width wraps to text
+    series.tooltip.label.minHeight = 40; //height wraps to text
+    series.tooltip.label.textAlign = 'Left'; //horizontally align text
+    series.tooltip.label.textValign = 'middle'; //vertically center text
+
+    // Create bullets
+    var bullet = series.bullets.push(new am4charts.CircleBullet()); //create bullets
+    bullet.circle.strokeWidth = 2; //line thickness of bullet
+    bullet.circle.radius = 4; //roundness of bullet
+    bullet.circle.fill = am4core.color('#fff'); //color fill inside bullet
+
+    var bullethover = bullet.states.create('hover'); //on hover do something
+    bullethover.properties.scale = 1.3; //on hover grow bullet
+
+    // Make a panning cursor [aka that crosshair looking thing]
+    chart.cursor = new am4charts.XYCursor();
+
+    // Create horizontal scrollbar
+    chart.scrollbarX = new am4charts.XYChartScrollbar(); //create scrollbar
+    chart.scrollbarX.series.push(series); //show series aka line in background of the scrollbar
+    chart.scrollbarX.parent = chart.bottomAxesContainer; //place scrollbar to the bottom, default top
+  });
+</script>
+
+<!-- HTML -->
+<div id="chartdiv"></div>

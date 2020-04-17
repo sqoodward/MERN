@@ -4,19 +4,20 @@
   "description": "test",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server"
+    "start": "concurrently \"nodemon server.js\" \"node broker.js\""
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "config": "^3.2.4",
+    "d3-time-format": "^2.2.3",
     "express": "^4.17.1",
     "express-validator": "^6.3.0",
     "gravatar": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.8.1",
+    "mosca": "^2.8.3",
     "request": "^2.88.0"
   },
   "devDependencies": {
