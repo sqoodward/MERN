@@ -10,14 +10,12 @@ router.post(
   //takes 3 args, string, array, anonymous callback function
   '/',
   [
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
+    check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
     check(
       'password',
       'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
+    ).isLength({ min: 6 }),
   ],
   async (req, res) => {
     //validate http post
@@ -42,7 +40,7 @@ router.post(
       const avatar = gravatar.url(email, {
         s: '200',
         r: 'pg',
-        d: 'mm'
+        d: 'mm',
       });
 
       //contructor function for object to be posted to the DB
@@ -50,7 +48,7 @@ router.post(
         name,
         email,
         avatar,
-        password
+        password,
       });
 
       //encrypt password

@@ -1,8 +1,14 @@
 <!-- Styles -->
 <style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol';
+  }
+
   #chartdiv {
     width: 100%;
-    height: 500px;
+    height: 75%;
   }
 </style>
 
@@ -35,12 +41,9 @@
     //the max zoom for the labels stop at the day. Either type 'hh' or any other format that include hours, like 'i' (ISO 8601) which includes the whole set.
     //ISO FORMAT "2020-12-20T08:21:57.592Z" 2020(year):12(month):20(day):T(delimiter):08(hour):21(minute):57(seconds).592(milliseconds)Z(UTC)
 
-    // chart.dateFormatter = new am4core.DateFormatter(); //above is for the parser... what if you want a simpler format just for display?
-    // chart.dateFormatter.dateFormat = 'I'; //you can use this to format the date any way you like
-
     //Create title
     let title = chart.titles.create();
-    title.text = 'Humidity Tracker';
+    title.text = '';
     title.fontSize = 40;
     title.marginBottom = 30;
 
@@ -57,7 +60,11 @@
     series.minBulletDistance = 15; //bulllets only show within certain treshold - don't want graph spammed with bullets - higher number the more zoomed for it to show
 
     // Tooltips [pop up info textbox on hover]
-    series.tooltipText = 'Humidity: {humidity} \n Time: {date}'; //tooltip text - parenthesis for variables, [\n for linebreak]
+    series.dateFormatter = new am4core.DateFormatter(); //custom format date of tooltips
+    series.dateFormatter.dateFormat = 'I'; //default date format is from the parsed dates from inputDateFormat, you can choose custom
+
+    series.tooltipText =
+      '[bold]Humidity:[/] {humidity} \n [bold]Time:[/] {date}'; //tooltip text - parenthesis for variables, [\n for linebreak]
     series.tooltip.background.cornerRadius = 0; //make tooltip round
     series.tooltip.background.strokeOpacity = 0; //make tooltip transparent
     series.tooltip.pointerOrientation = 'horizontal'; //direction of tooltip arrow [vertical/horizontal]
@@ -81,7 +88,7 @@
     // Create horizontal scrollbar
     chart.scrollbarX = new am4charts.XYChartScrollbar(); //create scrollbar
     chart.scrollbarX.series.push(series); //show series aka line in background of the scrollbar
-    chart.scrollbarX.parent = chart.bottomAxesContainer; //place scrollbar to the bottom, default top
+    //chart.scrollbarX.parent = chart.bottomAxesContainer; //place scrollbar to the bottom, default top
   });
 </script>
 
